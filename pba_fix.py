@@ -176,7 +176,7 @@ with st.container():
             slang_dict = json.loads(data)
 
             #Dataset
-            Data_ulasan = pd.read_csv(r"C:\Users\HP\datapba_prep.csv")
+            Data_ulasan = pd.read_csv("datapba_prep.csv")
             ulasan_dataset = Data_ulasan['Steaming']
             sentimen = Data_ulasan['Label']
 
