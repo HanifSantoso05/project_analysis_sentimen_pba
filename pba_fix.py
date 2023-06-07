@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd 
 import numpy as np
 import regex as re
-import jsons as json
+import json
 import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
@@ -17,7 +17,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 import pickle5 as pickle 
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, precision_score, recall_score,  accuracy_score, classification_report
-import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -78,30 +77,31 @@ with st.container():
         </ol> 
         """,unsafe_allow_html=True)
         st.write("#### Dataset")
-        df = pd.read_csv(r"C:\Users\HP\DataBerita.csv")
+        df = pd.read_csv("DataBerita.csv")
         st.write(df)
 
     elif selected == "Preprocessing":
         st.write("## Preprocessing")
         st.subheader("Case Folding")
-        case_folding = pd.read_csv(r"C:\Users\HP\preplowecase.csv")
+        case_folding = pd.read_csv("preplowecase.csv")
         st.write(pd.DataFrame(case_folding['Judul Berita'].values,columns=["Case Folding"]))
         st.subheader("Cleansing Dataset")
-        cleansing = pd.read_csv(r"C:\Users\HP\prepcleansing.csv")
+        cleansing = pd.read_csv("prepcleansing.csv")
         st.write(pd.DataFrame(cleansing['Cleansing Abstrak'].values,columns=["Cleansing Data"]))
         st.subheader("Slang Word")
-        slang = pd.read_csv(r"C:\Users\HP\data_slang.csv")
+        slang = pd.read_csv("data_slang.csv")
         st.write(pd.DataFrame(slang['Slang Word Corection'].values,columns=["Slang Word Corection"]))
         st.subheader("Steaming")
-        steaming = pd.read_csv(r"C:\Users\HP\data_steaming.csv")
+        steaming = pd.read_csv("data_steaming.csv")
         st.write(pd.DataFrame(steaming['Steaming'].values,columns=["Steaming"]))
 
     elif selected == "TFIDF":
         st.subheader("Hasil dari pembobotan kata menggunakan metode TFIDF")
         #Dataset
-        Data_ulasan = pd.read_csv(r"C:\Users\HP\datapba_prep.csv")
+        Data_ulasan = pd.read_csv("datapba_prep.csv")
         ulasan_dataset = Data_ulasan['Steaming']
         sentimen = Data_ulasan['Label']
+        
         # TfidfVectorizer 
         tfidfvectorizer = TfidfVectorizer(analyzer='word')
         tfidf_wm = tfidfvectorizer.fit_transform(ulasan_dataset)
@@ -112,7 +112,7 @@ with st.container():
     elif selected == "Modeling":
         st.subheader("Modeling Dataset dengan Metode MultinomialNB")
         #Dataset
-        Data_ulasan = pd.read_csv(r"C:\Users\HP\datapba_prep.csv")
+        Data_ulasan = pd.read_csv("datapba_prep.csv")
         ulasan_dataset = Data_ulasan['Steaming']
         sentimen = Data_ulasan['Label']
 
@@ -181,23 +181,17 @@ with st.container():
             sentimen = Data_ulasan['Label']
 
             # TfidfVectorizer 
-            tfidfvectorizer = TfidfVectorizer(analyzer='word')
-            tfidf_wm = tfidfvectorizer.fit_transform(ulasan_dataset)
-            tfidf_tokens = tfidfvectorizer.get_feature_names_out()
-            df_tfidfvect = pd.DataFrame(data = tfidf_wm.toarray(),columns = tfidf_tokens)
-            with open('model.pkl', 'rb') as file:
-                loaded_model = pickle.load(file)
-            
-            # with open('tfidf.pkl', 'rb') as file:
-            #     loaded_data_tfid = pickle.load(file)
-            
-            # tfidf_wm = loaded_data_tfid.fit_transform(names)
+            with open('tfidf.pkl', 'rb') as file:
+            loaded_data_tfid = pickle.load(file)
+            tfidf_wm = loaded_data_tfid.fit_transform(ulasan_dataset)
 
             #Train test split
             training, test = train_test_split(tfidf_wm,test_size=0.2, random_state=1)#Nilai X training dan Nilai X testing
             training_label, test_label = train_test_split(sentimen, test_size=0.2, random_state=1)#Nilai Y training dan Nilai Y testing    
 
             # model
+            with open('model.pkl', 'rb') as file:
+                loaded_model = pickle.load(file)
             clf = loaded_model.fit(training,training_label)
             y_pred=clf.predict(test)
 
