@@ -182,7 +182,7 @@ with st.container():
 
             # TfidfVectorizer 
             with open('tfidf.pkl', 'rb') as file:
-            loaded_data_tfid = pickle.load(file)
+                loaded_data_tfid = pickle.load(file)
             tfidf_wm = loaded_data_tfid.fit_transform(ulasan_dataset)
 
             #Train test split
